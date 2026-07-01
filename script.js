@@ -1,53 +1,60 @@
-// ===========================
-// TYPING ANIMATION
-// ===========================
-
-const typingText = document.getElementById("typing");
+// ===============================
+// TYPING EFFECT
+// ===============================
 
 const words = [
     "AI & ML Student",
     "Web Developer",
     "Python Programmer",
-    "Future AI Engineer",
-    "Full Stack Developer"
+    "Full Stack Learner",
+    "IoT Enthusiast",
+    "Machine Learning Enthusiast"
 ];
 
 let wordIndex = 0;
 let charIndex = 0;
-let isDeleting = false;
+let deleting = false;
+
+const typing = document.getElementById("typing");
 
 function typeEffect() {
 
+    if (!typing) return;
+
     const currentWord = words[wordIndex];
 
-    if (!isDeleting) {
-        typingText.textContent = currentWord.substring(0, charIndex++);
+    if (!deleting) {
+
+        typing.textContent = currentWord.substring(0, charIndex + 1);
+        charIndex++;
+
+        if (charIndex === currentWord.length) {
+            deleting = true;
+            setTimeout(typeEffect, 1500);
+            return;
+        }
+
     } else {
-        typingText.textContent = currentWord.substring(0, charIndex--);
+
+        typing.textContent = currentWord.substring(0, charIndex - 1);
+        charIndex--;
+
+        if (charIndex === 0) {
+            deleting = false;
+            wordIndex = (wordIndex + 1) % words.length;
+        }
     }
 
-    let speed = isDeleting ? 80 : 150;
-
-    if (!isDeleting && charIndex > currentWord.length) {
-        speed = 1500;
-        isDeleting = true;
-    }
-
-    if (isDeleting && charIndex < 0) {
-        isDeleting = false;
-        wordIndex = (wordIndex + 1) % words.length;
-        speed = 300;
-    }
-
+    const speed = deleting ? 60 : 120;
     setTimeout(typeEffect, speed);
 }
 
 typeEffect();
 
 
-// ===========================
+// ===============================
 // ACTIVE NAVIGATION
-// ===========================
+// ===============================
 
 const sections = document.querySelectorAll("section");
 const navLinks = document.querySelectorAll("nav ul li a");
@@ -58,7 +65,8 @@ window.addEventListener("scroll", () => {
 
     sections.forEach(section => {
 
-        const sectionTop = section.offsetTop - 150;
+        const sectionTop = section.offsetTop - 120;
+        const sectionHeight = section.clientHeight;
 
         if (pageYOffset >= sectionTop) {
             current = section.getAttribute("id");
@@ -79,108 +87,128 @@ window.addEventListener("scroll", () => {
 });
 
 
-// ===========================
-// HEADER SHADOW
-// ===========================
+// ===============================
+// SCROLL REVEAL ANIMATION
+// ===============================
 
-const header = document.querySelector("header");
-
-window.addEventListener("scroll", () => {
-
-    if (window.scrollY > 50) {
-        header.style.boxShadow = "0 5px 20px rgba(0,0,0,0.4)";
-    } else {
-        header.style.boxShadow = "none";
-    }
-
-});
-
-
-// ===========================
-// SCROLL TO TOP BUTTON
-// ===========================
-
-const topBtn = document.createElement("button");
-
-topBtn.innerHTML = "⬆";
-
-topBtn.id = "topBtn";
-
-document.body.appendChild(topBtn);
-
-topBtn.style.position = "fixed";
-topBtn.style.bottom = "25px";
-topBtn.style.right = "25px";
-topBtn.style.width = "50px";
-topBtn.style.height = "50px";
-topBtn.style.border = "none";
-topBtn.style.borderRadius = "50%";
-topBtn.style.background = "#38bdf8";
-topBtn.style.color = "#fff";
-topBtn.style.fontSize = "22px";
-topBtn.style.cursor = "pointer";
-topBtn.style.display = "none";
-topBtn.style.transition = "0.3s";
-topBtn.style.zIndex = "1000";
-
-window.addEventListener("scroll", () => {
-
-    if (window.scrollY > 300) {
-        topBtn.style.display = "block";
-    } else {
-        topBtn.style.display = "none";
-    }
-
-});
-
-topBtn.onclick = () => {
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
-
-};
-
-
-// ===========================
-// FADE-IN ANIMATION
-// ===========================
-
-const cards = document.querySelectorAll(
-    ".card, .project-card, .skill"
+const revealElements = document.querySelectorAll(
+    ".card, .skill, .project-card, .contact"
 );
 
-const observer = new IntersectionObserver((entries) => {
+function revealOnScroll() {
 
-    entries.forEach(entry => {
+    const trigger = window.innerHeight * 0.85;
 
-        if (entry.isIntersecting) {
+    revealElements.forEach(element => {
 
-            entry.target.style.opacity = "1";
-            entry.target.style.transform = "translateY(0)";
+        const top = element.getBoundingClientRect().top;
+
+        if (top < trigger) {
+
+            element.style.opacity = "1";
+            element.style.transform = "translateY(0)";
 
         }
 
     });
 
-}, {
-    threshold: 0.2
-});
+}
 
-cards.forEach(card => {
+revealElements.forEach(element => {
 
-    card.style.opacity = "0";
-    card.style.transform = "translateY(40px)";
-    card.style.transition = "0.7s";
-
-    observer.observe(card);
+    element.style.opacity = "0";
+    element.style.transform = "translateY(40px)";
+    element.style.transition = "all .7s ease";
 
 });
 
+window.addEventListener("scroll", revealOnScroll);
+window.addEventListener("load", revealOnScroll);
 
-// ===========================
+
+// ===============================
+// STICKY HEADER EFFECT
+// ===============================
+
+const header = document.querySelector("header");
+
+window.addEventListener("scroll", () => {
+
+    if (window.scrollY > 80) {
+
+        header.style.background = "#0b1120";
+        header.style.boxShadow = "0 10px 25px rgba(0,0,0,0.35)";
+
+    } else {
+
+        header.style.background = "#111827";
+        header.style.boxShadow = "0 5px 15px rgba(0,0,0,.25)";
+
+    }
+
+});
+
+
+// ===============================
+// SMOOTH SCROLL
+// ===============================
+
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+
+    anchor.addEventListener("click", function (e) {
+
+        e.preventDefault();
+
+        const target = document.querySelector(this.getAttribute("href"));
+
+        if (target) {
+
+            target.scrollIntoView({
+                behavior: "smooth"
+            });
+
+        }
+
+    });
+
+});
+
+
+// ===============================
+// BUTTON RIPPLE EFFECT
+// ===============================
+
+const buttons = document.querySelectorAll(".btn");
+
+buttons.forEach(button => {
+
+    button.addEventListener("mouseenter", () => {
+        button.style.transform = "translateY(-4px) scale(1.03)";
+    });
+
+    button.addEventListener("mouseleave", () => {
+        button.style.transform = "translateY(0) scale(1)";
+    });
+
+});
+
+
+// ===============================
+// CURRENT YEAR IN FOOTER
+// ===============================
+
+const footer = document.querySelector("footer p");
+
+if (footer) {
+
+    footer.innerHTML =
+        `© ${new Date().getFullYear()} Supriya Pandey | Designed with ❤️ using HTML, CSS & JavaScript`;
+
+}
+
+
+// ===============================
 // CONSOLE MESSAGE
-// ===========================
+// ===============================
 
-console.log("Welcome to Supriya Pandey's Portfolio 🚀");
+console.log("Portfolio Loaded Successfully 🚀");
